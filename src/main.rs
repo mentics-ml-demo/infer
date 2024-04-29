@@ -42,8 +42,8 @@ impl Predict {
         println!("Processing event {:?}", event);
         // TODO: buffer
         let inf = Inferred { id: event.id, timestamp: shared_types::now(), inference: Inference::default() };
-        self.store.write_inference(&inf).await.map_err(|e| {
-            self.logger.log(format!("Error inserting inferred {:?}", &inf));
+        let _ = self.store.write_inference(&inf).await.map_err(|e| {
+            self.logger.log(format!("Error {} inserting inferred {:?}", e, &inf));
         });
     }
 }
