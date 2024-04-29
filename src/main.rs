@@ -1,4 +1,4 @@
-use series_store::{SeriesReader, SeriesWriter};
+use series_store::SeriesReader;
 use kv_store::*;
 use shared_types::{Event, Inference, Inferred, Logger, StdoutLogger};
 
