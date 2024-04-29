@@ -13,8 +13,8 @@ anyhow = "1.0.82"
 tokio = { version = "1.37.0", features = ["full"] }
 
 # shared-types = { git = "https://github.com/mentics-ml-demo/shared-types.git", branch = "main" }
-shared-types = { path = "/home/jshellman/dev/ml-demo/shared-types" }
+shared-types = { path = "../shared-types" }
 # series-store = { git = "https://github.com/mentics-ml-demo/series-store.git", branch = "main" }
-series-store = { path = "/home/jshellman/dev/ml-demo/series-store" }
+series-store = { path = "../series-store" }
 # kv-store = { git = "https://github.com/mentics-ml-demo/kv-store.git", branch = "main" }
-kv-store = { path = "/home/jshellman/dev/ml-demo/kv-store" }
+kv-store = { path = "../kv-store" }
