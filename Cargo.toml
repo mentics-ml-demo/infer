@@ -12,9 +12,9 @@ anyhow = "1.0.82"
 # Trim down features for tokio later
 tokio = { version = "1.37.0", features = ["full"] }
 
-# shared-types = { git = "https://github.com/mentics-ml-demo/shared-types.git", branch = "main" }
+# shared-types = { git = "https://github.com/mentics-online-ml/shared-types.git", branch = "main" }
 shared-types = { path = "../shared-types" }
-# series-store = { git = "https://github.com/mentics-ml-demo/series-store.git", branch = "main" }
+# series-store = { git = "https://github.com/mentics-online-ml/series-store.git", branch = "main" }
 series-store = { path = "../series-store" }
-# kv-store = { git = "https://github.com/mentics-ml-demo/kv-store.git", branch = "main" }
+# kv-store = { git = "https://github.com/mentics-online-ml/kv-store.git", branch = "main" }
 kv-store = { path = "../kv-store" }
