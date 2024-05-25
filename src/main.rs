@@ -1,13 +1,13 @@
 use series_store::SeriesReader;
 use kv_store::*;
-use shared_types::{Inference, Inferred, Logger, StdoutLogger};
+use shared_types::*;
 
 // TODO: When it first comes up, check if there are enough messages in series-store in the past to fill the buffer.
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let reader = SeriesReader::new(Box::new(StdoutLogger()))?;
-    let store = KVStore::new().await?;
+    let store = KVStore::new(CURRENT_VERSION).await?;
     let logger = StdoutLogger();
 
     let predict = Predict::new(reader, store, Box::new(logger));
