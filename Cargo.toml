@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# chrono = "0.4.38"
+chrono = { version = "0.4.38", default-features = false }
 # futures = "0.3.30"
 anyhow = "1.0.82"
 # Trim down features for tokio later
@@ -18,3 +18,5 @@ shared-types = { path = "../shared-types" }
 series-store = { path = "../series-store" }
 # kv-store = { git = "https://github.com/mentics-online-ml/kv-store.git", branch = "main" }
 kv-store = { path = "../kv-store" }
+# train = { git = "https://github.com/mentics-online-ml/train.git", branch = "main" }
+train = { path = "../train" }
