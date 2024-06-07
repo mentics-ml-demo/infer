@@ -1,5 +1,4 @@
-use anyhow::anyhow;
-use std::collections::{HashMap, VecDeque};
+use std::{collections::{HashMap, VecDeque}, env};
 
 use shared_types::*;
 use series_proc::BaseHandler;
@@ -7,31 +6,32 @@ use series_store::*;
 use kv_store::*;
 use train::{convert::*, inferer::{make_inferer, Inferer}, TheBackend};
 
-// 1079613
-const START_OFFSET_ID: OffsetId = 1089327 - 10;
-// const START_EVENT_ID: EventId = 1410133;
-const MAX: usize = 100;
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let mut count = 10;
+    // let mut reset = false;
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 1 {
+        let mut index = 1;
+        let mut arg = &args[index];
+        if arg == "reset" {
+            // reset = true;
+            index += 1;
+        }
+        arg = &args[index];
+        if let Ok(arg_count) = arg.parse::<usize>() {
+            count = arg_count;
+        }
+    }
+
     let topic = Topic::new("raw", "SPY", "quote");
     let series = SeriesReader::new_topic(StdoutLogger::boxed(), "infer", &topic)?;
     let store = KVStore::new(CURRENT_VERSION).await?;
 
+    let offset = store.next_safe_predict_offset().await?;
+    series.seek(offset - SERIES_LENGTH + 1)?;
 
-    // // let newest_trained_event_id = 1408298;
-    // // let newest_trained_offset = 1079783;
-    // let max_trained_event_id = store.run_query("select max(event_id) from train_loss;").await?[0].columns[0].as_ref().unwrap().as_bigint().unwrap() as EventId;
-    // "select offset_to from labeled where event_id = 1410133 allow filtering;"
-
-    // let rows = self.store.run_query("select offset_from from labeled where version=1 and event_id > max_trained_event_id order by event_id limit 10 allow filtering;").await?;
-    // select offset_from from labeled where version=1 and event_id > 1407088 order by event_id limit 10 allow filtering;
-    // let offset = rows[0].columns[0].as_ref().unwrap().as_bigint().unwrap();
-    // self.series_events.seek(offset)?;
-
-    series.seek(START_OFFSET_ID - SERIES_LENGTH)?;
-
-    let predict = Infer::new(store, MAX, StdoutLogger::boxed()).await?;
+    let predict = Infer::new(store, count, StdoutLogger::boxed()).await?;
     let mut handler: BaseHandler<QuoteValues, QuoteEvent, _> = BaseHandler::new(predict);
     series.for_each_msg(&mut handler).await;
 
@@ -56,17 +56,14 @@ impl Infer {
         Ok(Infer { logger, inferer: infer, store, count: 0, max, lookup })
     }
 
-    async fn load_lookup(store: &KVStore, max: usize) -> anyhow::Result<HashMap<EventId,LabelType>> {
-        let rows = store.run_query(&format!("select event_id, label from ml_demo.labeled where version=1 and offset_from >= {} order by event_id ASC limit {} allow filtering;", START_OFFSET_ID, max)).await?;
+    async fn load_lookup(store: &KVStore, count: usize) -> anyhow::Result<HashMap<EventId,LabelType>> {
+        let rows = store.label_lookup(START_OFFSET_ID, count).await?;
         // select event_id, label from ml_demo.labeled where version=1 and offset_from >= 1089327 order by event_id ASC limit 10 allow filtering;
         // , offset_from, offset_to
         let mut map = HashMap::new();
         for row in rows {
-            let event_id = row.columns[0].as_ref().unwrap().as_bigint().unwrap() as EventId;
-            let label_raw = row.columns[1].as_ref().unwrap().as_list().unwrap();
-            let label2 = label_raw.iter().map(|x| x.as_float().unwrap()).collect::<Vec<_>>();
-            let label = label2.try_into().map_err(|e| anyhow!("Error converting label {:?}", e))?;
-            map.insert(event_id, label);
+            println!("Added lookup for offset {}", row.offset_from);
+            map.insert(row.event_id, row.label);
         }
         println!("Loaded {} entries into lookup map", map.len());
         println!("keys: {:?}", map.keys());
