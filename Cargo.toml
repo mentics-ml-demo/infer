@@ -12,7 +12,8 @@ anyhow = "1.0.82"
 # Trim down features for tokio later
 tokio = { version = "1.37.0", features = ["full"] }
 # burn = { version = "0.13.2", features = ["train", "wgpu"] }
-burn = { git = "https://github.com/tracel-ai/burn.git", default-features = false, features = ["std", "autodiff", "wgpu", "fusion"] }
+# burn = { git = "https://github.com/tracel-ai/burn.git", default-features = false, features = ["std", "autodiff", "wgpu", "fusion"] }
+burn = { git = "https://github.com/tracel-ai/burn.git", default-features = false, features = ["std", "autodiff", "fusion", "candle-cuda"] }
 # or maybe could use "train" and "sqlite_bundled" features instead of "autodiff" if I ever need dataset feature
 
 # shared-types = { git = "https://github.com/mentics-online-ml/shared-types.git", branch = "main" }

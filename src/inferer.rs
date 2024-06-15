@@ -1,11 +1,11 @@
 use burn::{nn::loss::{MseLoss, Reduction}, tensor::{backend::Backend, Tensor}};
 
 use data_info::MODEL_OUTPUT_WIDTH;
-use shared_burn::{model::{ModelInput, ModelOutput, TheModel}, model_persist::load_model, output::print_compare_table, tensor1_to_vec, Model, TheBackend};
+use shared_burn::{burn_device, model::{ModelInput, ModelOutput, TheModel}, model_persist::load_model, output::print_compare_table, tensor1_to_vec, Model, TheBackend};
 use shared_types::*;
 
 pub fn make_inferer() -> anyhow::Result<Inferer<TheBackend>> {
-    let device = burn::backend::wgpu::WgpuDevice::default();
+    let device = burn_device();
     Inferer::new(device)
 }
 

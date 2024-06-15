@@ -105,7 +105,7 @@ impl Infer {
                 return false;
             },
         };
-        let input = inputs_to_device(vec![input_raw], &self.inferer.device);
+        let input = inputs_to_device(&vec![input_raw], &self.inferer.device);
 
         match self.lookup.get(&event_id) {
             Some(label_raw) => {
